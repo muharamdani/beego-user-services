@@ -9,7 +9,7 @@ type Users struct {
 	FirstName   string        `valid:"Required" json:"first_name" bson:"first_name"`
 	LastName    string        `valid:"Required" json:"last_name" bson:"last_name"`
 	Username    string        `valid:"Required" json:"username" bson:"username"`
-	PhoneNumber string        `valid:"Mobile" json:"phone_number" bson:"phone_number"`
+	PhoneNumber string        `valid:"Required" json:"phone_number" bson:"phone_number"`
 	Email       string        `valid:"Email" json:"email" bson:"email"`
 	Address     string        `valid:"Required" json:"address" bson:"address"`
 }
@@ -31,8 +31,8 @@ func (this *Users) List(perPage int, page int) (result []Users, err error) {
 }
 
 func (this *Users) Create() (result *Users, err error) {
-	//this.Id = bson.NewObjectId()
-	//err = mHandler.C(this.Name()).Insert(this)
+	this.Id = bson.NewObjectId()
+	err = mHandler.C(this.Name()).Insert(this)
 	result = this
 	return
 }

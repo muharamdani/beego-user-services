@@ -1,0 +1,12 @@
+RunMode = dev
+StaticDir = static:web/static
+ViewsPath = web/views
+CopyRequestBody = true
+
+MongoURL = mongodb://172.20.0.2:27017/beego
+
+[dev]
+HTTPPort = 8080
+
+[prod]
+HTTPPort = 8080

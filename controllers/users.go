@@ -1,16 +1,15 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/astaxie/beego"
-	"github.com/beego/beego/v2/core/validation"
 	"gopkg.in/mgo.v2/bson"
 	"net/http"
 	"user_services/models"
+	"user_services/utils"
 )
 
 type UsersController struct {
-	BaseController
+	utils.BaseController
 	users models.Users
 }
 
@@ -33,7 +32,7 @@ func (this *UsersController) List() {
 	// Get data by limit and offset
 	result, err := this.users.List(perPage, page)
 	if err != nil {
-		this.Error(UNKNOWN, "An exception occurred when querying the users list", err)
+		this.Error(utils.UNKNOWN, "An exception occurred when querying the users list", err)
 		return
 	}
 	this.Success(result, "Get data successful")
@@ -42,7 +41,7 @@ func (this *UsersController) List() {
 func (this *UsersController) GetByID() {
 	result, err := this.users.GetByID(bson.ObjectIdHex(this.GetString(":id")))
 	if err != nil {
-		this.Error(UNKNOWN, "Query users data exception!", err)
+		this.Error(utils.UNKNOWN, "Query users data exception!", err)
 		return
 	}
 	this.Success(result, "Get data successful")
@@ -54,22 +53,12 @@ func (this *UsersController) PostCreate() {
 		return
 	}
 	// Validation
-	valid := validation.Validation{}
-	b, err := valid.Valid(&this.users)
-	if err != nil {
-		this.ResParseError(err)
+	res := utils.GetValidationResult(&this.users)
+	if len(res) != 0 {
+		this.UnprocessableEntity(res)
 		return
 	}
-	if !b {
-		var msg string
-		for _, err := range valid.Errors {
-			msg += fmt.Sprintf("%s: %s\r", err.Key, err.Message)
-		}
-		this.Ctx.ResponseWriter.WriteHeader(400)
-		this.Data["json"] = &map[string]interface{}{"status": "error", "message": msg}
-		fmt.Println(msg)
-		return
-	}
+
 	result, err := this.users.Create()
 	if err != nil {
 		beego.Error(err)
